@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { Mail, MapPin, ArrowRight, Send, Globe, Phone } from 'lucide-react';
+import { Mail, MapPin, Send, Phone } from 'lucide-react';
 
 const GithubIcon = ({ size = 20 }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
     strokeLinejoin="round"
   >
     <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
@@ -19,15 +19,15 @@ const GithubIcon = ({ size = 20 }) => (
 );
 
 const LinkedinIcon = ({ size = 20 }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
     strokeLinejoin="round"
   >
     <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
@@ -37,22 +37,21 @@ const LinkedinIcon = ({ size = 20 }) => (
 );
 
 const TwitterIcon = ({ size = 20 }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
     strokeLinejoin="round"
   >
     <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
     <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
   </svg>
 );
-
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -63,7 +62,7 @@ export default function Contact() {
     customSubject: '',
     message: ''
   });
-  
+
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -72,8 +71,10 @@ export default function Contact() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  // REAL API INTEGRATION WITH NODEJS & MONGODB BACKEND
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!formData.name || !formData.email || !formData.message) {
       setStatus({ type: 'error', message: 'Please fill in all required fields.' });
       return;
@@ -87,28 +88,60 @@ export default function Contact() {
     setIsSubmitting(true);
     setStatus({ type: '', message: '' });
 
-    // Simulate API request (Fully prepped for Firebase integration)
-    setTimeout(() => {
+    // Agar Subject "Other" hai toh customSubject bhejenge
+    const finalSubject = formData.subject === 'Other' ? formData.customSubject : formData.subject;
+
+    try {
+      const response = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          subject: finalSubject,
+          message: formData.message
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setStatus({
+          type: 'success',
+          message: 'Thank you! Your message has been saved & sent successfully.'
+        });
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: 'Project Inquiry',
+          customSubject: '',
+          message: ''
+        });
+      } else {
+        setStatus({
+          type: 'error',
+          message: data.message || data.error || 'Failed to send message.'
+        });
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      setStatus({
+        type: 'error',
+        message: 'Server error. Please check if your Node server is running on port 5000.'
+      });
+    } finally {
       setIsSubmitting(false);
-      setStatus({ 
-        type: 'success', 
-        message: 'Thank you! Your message has been sent successfully.' 
-      });
-      setFormData({ 
-        name: '', 
-        email: '', 
-        phone: '', 
-        subject: 'Project Inquiry', 
-        customSubject: '', 
-        message: '' 
-      });
-    }, 1500);
+    }
   };
 
   return (
     <section id="contact">
       <div className="container">
-        
+
         {/* Section Header */}
         <div className="section-header reveal">
           <span className="section-subtitle">Let's Connect</span>
@@ -117,43 +150,43 @@ export default function Contact() {
 
         {/* Contact Layout */}
         <div className="contact-wrapper">
-          
+
           {/* Details Column */}
           <div className="contact-details reveal">
             <h3 className="contact-lead">Let's collaborate on your next digital product.</h3>
             <p className="contact-text">
               I am open to contract opportunities, freelance gigs, or full-time roles. If you have an idea you want to bring to life, or just want to chat about code, feel free to reach out!
             </p>
-            
+
             <div className="contact-methods">
-              <div className="contact-method">
+              <a href="mailto:saembehlim@gmail.com" className="contact-method">
                 <div className="method-icon">
                   <Mail size={20} />
                 </div>
                 <div className="method-info">
                   <h4>Email</h4>
                   <p>
-                    <a href="mailto:saembehlim@gmail.com" className="contact-link">
+                    <span className="contact-link">
                       saembehlim@gmail.com
-                    </a>
+                    </span>
                   </p>
                 </div>
-              </div>
+              </a>
 
-              <div className="contact-method">
+              <a href="tel:+919461047417" className="contact-method">
                 <div className="method-icon">
                   <Phone size={20} />
                 </div>
                 <div className="method-info">
                   <h4>Phone</h4>
                   <p>
-                    <a href="tel:+919876543210" className="contact-link">
-                      +91 98765 43210
-                    </a>
+                    <span className="contact-link">
+                      +91 9461047417
+                    </span>
                   </p>
                 </div>
-              </div>
-              
+              </a>
+
               <div className="contact-method">
                 <div className="method-icon">
                   <MapPin size={20} />
@@ -167,28 +200,28 @@ export default function Contact() {
 
             {/* Social Links */}
             <div className="socials-list">
-              <a 
-                href="https://github.com" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="social-link"
                 title="GitHub"
               >
                 <GithubIcon size={20} />
               </a>
-              <a 
-                href="https://linkedin.com" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="social-link"
                 title="LinkedIn"
               >
                 <LinkedinIcon size={20} />
               </a>
-              <a 
-                href="https://twitter.com" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="social-link"
                 title="Twitter"
               >
@@ -214,7 +247,7 @@ export default function Contact() {
                     required
                   />
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="email">Email *</label>
                   <input
@@ -297,8 +330,8 @@ export default function Contact() {
                 </div>
               )}
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="glow-btn glow-btn-primary submit-btn"
                 disabled={isSubmitting}
               >

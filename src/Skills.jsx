@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Cpu, Server, ArrowLeft, Terminal, Check } from 'lucide-react';
-
-/* --- Beautiful Inline Brand SVGs (Compact sizes for 180px dials) --- */
+import { Layout, Cpu, Server, ArrowLeft, Terminal, Check, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+/* --- Brand SVGs --- */
 const ReactIcon = () => (
   <svg viewBox="-11.5 -10.23174 23 20.46348" width="20" height="20" style={{ filter: 'drop-shadow(0 0 6px #61dafb)' }}>
     <circle cx="0" cy="0" r="2.05" fill="#61dafb" />
@@ -78,7 +77,7 @@ const SKILLS_DATA = [
       </svg>
     ),
     desc: 'Engineering interactive, responsive, and pixel-perfect layouts using modern React patterns, state managers, and semantic styles.',
-    illustrations: [<ReactIcon />, <JSIcon />, <TSIcon />, <HTMLIcon />, <TailwindIcon />],
+    illustrations: [<ReactIcon key="react" />, <JSIcon key="js" />, <TSIcon key="ts" />, <HTMLIcon key="html" />, <TailwindIcon key="tailwind" />],
     skills: [
       { name: 'React (Hooks)', desc: 'Advanced state orchestration and component optimization.', level: 85, icon: <ReactIcon /> },
       { name: 'JS', desc: 'Strict typing structures and functional programming paradigms.', level: 85, icon: <JSIcon /> },
@@ -97,7 +96,7 @@ const SKILLS_DATA = [
     category: 'Tools & Ecosystem',
     icon: <Cpu size={22} />,
     desc: 'Orchestrating robust source control, package management, asset optimization, and Figma-to-code design pipeline handoffs.',
-    illustrations: [<GitIcon />, <FigmaIcon />, <JSIcon />],
+    illustrations: [<GitIcon key="git" />, <FigmaIcon key="figma" />, <JSIcon key="js" />],
     skills: [
       { name: 'Vite configs', desc: 'Asset splitting, module resolution, and server tuning.', level: 85, icon: <Cpu size={16} /> },
       { name: 'Git versioning', desc: 'Conflict resolution, rebase sequences, and branch controls.', level: 90, icon: <GitIcon /> },
@@ -116,7 +115,7 @@ const SKILLS_DATA = [
     category: 'Backend & Services',
     icon: <Server size={22} />,
     desc: 'Developing scalable server scripts, clean RESTful schemas, GraphQL data layers, and database queries.',
-    illustrations: [<NodeIcon />, <MongoIcon />, <TSIcon />],
+    illustrations: [<NodeIcon key="node" />, <MongoIcon key="mongo" />, <TSIcon key="ts" />],
     skills: [
       { name: 'Node.js & Express', desc: 'Middleware layers, routing logic, and error handlers.', level: 75, icon: <NodeIcon /> },
       { name: 'RESTful API logic', desc: 'Resource pathing, status maps, and request queries.', level: 85, icon: <Server size={16} /> },
@@ -133,83 +132,249 @@ const SKILLS_DATA = [
 ];
 
 export default function Skills() {
-  const [activeCategory, setActiveCategory] = useState(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [isClosing, setIsClosing] = useState(false);
+  const [showCloseAnimation, setShowCloseAnimation] = useState(false);
+  const [animationState, setAnimationState] = useState('');
 
-  // Prevent main page scrolling while detail overlay is active
+  // Lock body scroll whenever overlay is open
   useEffect(() => {
-    if (activeCategory) {
+    if (selectedCategoryId) {
+      if (window.lenis) window.lenis.stop();
       document.body.style.overflow = 'hidden';
-      document.body.style.height = '100vh';
-      document.documentElement.style.overflow = 'hidden';
     } else {
+      if (window.lenis) window.lenis.start();
       document.body.style.overflow = '';
-      document.body.style.height = '';
-      document.documentElement.style.overflow = '';
     }
     return () => {
+      if (window.lenis) window.lenis.start();
       document.body.style.overflow = '';
-      document.body.style.height = '';
-      document.documentElement.style.overflow = '';
     };
-  }, [activeCategory]);
-
-  // Reset activeCategory if a global transition is fired without an internal card action
-  useEffect(() => {
-    const handleGlobalTransition = (e) => {
-      const detail = e.detail;
-      const targetHash = typeof detail === 'string' ? detail : (detail.hash || '');
-      if (targetHash && !detail.action) {
-        setActiveCategory(null);
-      }
-    };
-    window.addEventListener('trigger-transition', handleGlobalTransition);
-    return () => window.removeEventListener('trigger-transition', handleGlobalTransition);
-  }, []);
+  }, [selectedCategoryId]);
 
   const handleCardClick = (catId) => {
-    window.dispatchEvent(
-      new CustomEvent('trigger-transition', {
-        detail: {
-          action: () => setActiveCategory(catId),
-          duration: 2000
-        }
-      })
-    );
+    setSelectedCategoryId(catId);
   };
 
-  const handleCloseDetail = () => {
+  const handleCloseDetail = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    // Step 1: Start exit transitions
     setIsClosing(true);
+    setShowCloseAnimation(true);
+    setAnimationState('closing-in');
+
+    // Step 2: Shutters meet in the middle at ~380ms, unmount detail view then
     setTimeout(() => {
-      window.dispatchEvent(
-        new CustomEvent('trigger-transition', {
-          detail: {
-            action: () => {
-              setActiveCategory(null);
-              setIsClosing(false);
-            },
-            duration: 0,
-            noOverlay: true,
-            hash: '#skills'
-          }
-        })
-      );
-    }, 600); // 600ms matches exit transition in CSS
+      setSelectedCategoryId(null);
+      setIsClosing(false);
+      setAnimationState('opening-out');
+    }, 380);
+
+    // Step 3: Shutters slide open completely at ~760ms, clean up
+    setTimeout(() => {
+      setShowCloseAnimation(false);
+      setAnimationState('');
+    }, 760);
   };
 
-  const selectedCategory = SKILLS_DATA.find((c) => c.id === activeCategory);
+  const selectedCategory = SKILLS_DATA.find((c) => c.id === selectedCategoryId);
 
   return (
-    <section id="skills">
-      <div className="container">
+    <section id="skills" style={{ position: 'relative' }}>
+      <style>{`
+        .premium-back-wrapper {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+          user-select: none;
+          transition: transform 0.2s ease, opacity 0.2s ease;
+        }
 
-        {/* Header (Always Visible) */}
+        .premium-back-wrapper:hover {
+          transform: translateX(-3px);
+          opacity: 0.85;
+        }
+
+        .premium-back-circle-btn {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          background: rgba(255, 255, 255, 0.08);
+          color: #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+
+        /* Dial Entry & Exit Animations */
+        @keyframes dial-fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.92);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        .circular-meter-box {
+          opacity: 0;
+          animation: dial-fade-in 0.65s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, border-color var(--transition-normal), box-shadow var(--transition-normal), background var(--transition-normal);
+        }
+
+        .skill-detail-fullscreen-overlay.closing .circular-meter-box {
+          opacity: 0 !important;
+          transform: translateY(30px) scale(0.92) !important;
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+          animation: none !important;
+        }
+
+        /* Fullscreen Tab Close Animation Overlay */
+        .tab-close-animation-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          z-index: 20000;
+          pointer-events: all;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+        }
+
+        .shutter-pane {
+          position: absolute;
+          top: 0;
+          width: 50%;
+          height: 100%;
+          background: var(--color-bg-darkest, #070a13);
+          transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+          box-sizing: border-box;
+        }
+
+        .shutter-left {
+          left: 0;
+          border-right: 2px solid var(--color-primary, #10b981);
+          transform: translateX(-100%);
+        }
+
+        .shutter-right {
+          right: 0;
+          border-left: 2px solid var(--color-secondary, #06b6d4);
+          transform: translateX(100%);
+        }
+
+        .tab-close-animation-overlay.closing-in .shutter-left {
+          transform: translateX(0);
+        }
+
+        .tab-close-animation-overlay.closing-in .shutter-right {
+          transform: translateX(0);
+        }
+
+        .tab-close-animation-overlay.opening-out .shutter-left {
+          transform: translateX(-100%);
+        }
+
+        .tab-close-animation-overlay.opening-out .shutter-right {
+          transform: translateX(100%);
+        }
+
+        .tab-close-center-badge {
+          position: relative;
+          z-index: 20001;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          background: rgba(13, 20, 38, 0.85);
+          border: 1px solid rgba(16, 185, 129, 0.3);
+          padding: 1.5rem 2.5rem;
+          border-radius: 16px;
+          box-shadow: 0 0 30px rgba(16, 185, 129, 0.2), inset 0 0 15px rgba(16, 185, 129, 0.1);
+          backdrop-filter: blur(8px);
+          opacity: 0;
+          transform: scale(0.8);
+          transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .tab-close-animation-overlay.closing-in .tab-close-center-badge {
+          opacity: 1;
+          transform: scale(1);
+          transition-delay: 0.15s;
+        }
+
+        .tab-close-animation-overlay.opening-out .tab-close-center-badge {
+          opacity: 0;
+          transform: scale(0.8);
+          transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+
+        .tab-close-text {
+          font-family: var(--font-heading), monospace;
+          font-size: 0.9rem;
+          font-weight: 700;
+          letter-spacing: 2px;
+          color: var(--color-primary, #10b981);
+          text-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+        }
+
+        .tab-close-icon {
+          color: var(--color-secondary, #06b6d4);
+          filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.5));
+          animation: tab-icon-pulse 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes tab-icon-pulse {
+          from {
+            transform: scale(1);
+          }
+          to {
+            transform: scale(1.1);
+          }
+        }
+
+        .tab-close-scanline {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+          box-shadow: 0 0 8px var(--color-primary);
+          animation: tab-scanline-sweep 1.2s linear infinite;
+        }
+
+        @keyframes tab-scanline-sweep {
+          0% {
+            top: 0%;
+          }
+          100% {
+            top: 100%;
+          }
+        }
+      `}</style>
+
+      <div className="container">
+        {/* Section Header */}
         <div className="section-header reveal">
           <span className="section-subtitle">What I am good at</span>
           <h2 className="section-title">My Technical Expertise</h2>
         </div>
 
-        {/* Skills Grid (Always mounted to protect scroll-reveal active state) */}
+        {/* Skills Grid */}
         <div className="skills-grid">
           {SKILLS_DATA.map((cat, idx) => (
             <div
@@ -218,15 +383,12 @@ export default function Skills() {
               onClick={() => handleCardClick(cat.id)}
             >
               <div className="card-header-area">
-                <div className="card-icon-circle">
-                  {cat.icon}
-                </div>
+                <div className="card-icon-circle">{cat.icon}</div>
                 <h3 className="card-title-text">{cat.category}</h3>
               </div>
 
               <p className="card-short-desc">{cat.desc}</p>
 
-              {/* Illustrative Brand Icons Area */}
               <div className="floating-badge-container">
                 {cat.illustrations.map((badge, bIdx) => (
                   <div
@@ -248,19 +410,17 @@ export default function Skills() {
             </div>
           ))}
         </div>
-      </div> {/* Close .container here so the fixed overlay is a sibling to it and bypasses transform bounds! */}
+      </div>
 
       {/* Immersive Fullscreen Detail View Overlay (Fades in over SPA) */}
       {selectedCategory && (
         <div className={`skill-detail-fullscreen-overlay ${isClosing ? 'closing' : ''}`}>
-
-          {/* Header Area */}
+          {/* Fixed Nav Header */}
           <div className="detail-header-nav-fixed">
-            {/* Premium Back Button Group */}
             <div className="premium-back-wrapper" onClick={handleCloseDetail}>
-              <button className="premium-back-circle-btn" aria-label="Go Back">
+              <div className="premium-back-circle-btn">
                 <ArrowLeft size={16} />
-              </button>
+              </div>
               <span className="premium-back-label">Return to Grid</span>
             </div>
 
@@ -269,11 +429,10 @@ export default function Skills() {
             </div>
           </div>
 
-          {/* Main Center Content Alignment Container */}
+          {/* Main Content */}
           <div className="detail-content-center-container">
             <div className="detail-visual-wrapper">
-
-              {/* Left Card: Matches the picture, compact padding */}
+              {/* Left Column Card */}
               <div className="detail-glass-left-card">
                 <div className="detail-card-brand-metal-frame">
                   {selectedCategory.icon}
@@ -305,7 +464,7 @@ export default function Skills() {
                 </div>
               </div>
 
-              {/* Connecting Animated Neon Wave SVG */}
+              {/* Neon Wave Path */}
               <div className="wave-connection-graphic">
                 <svg className="connecting-sine-wave" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -317,15 +476,15 @@ export default function Skills() {
                   />
                   <defs>
                     <linearGradient id="neon-wave-grad-3" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="var(--color-primary)" />
-                      <stop offset="50%" stopColor="var(--color-secondary)" />
-                      <stop offset="100%" stopColor="var(--color-primary)" />
+                      <stop offset="0%" stopColor="var(--color-primary, #61dafb)" />
+                      <stop offset="50%" stopColor="var(--color-secondary, #a259ff)" />
+                      <stop offset="100%" stopColor="var(--color-primary, #61dafb)" />
                     </linearGradient>
                   </defs>
                 </svg>
               </div>
 
-              {/* Right Area: 2x2 grid of circular progress meters */}
+              {/* Right Column Grid: Skill Dials */}
               <div className="detail-progress-right-grid">
                 {selectedCategory.skills.map((skill, sIdx) => {
                   const radius = 42;
@@ -334,21 +493,24 @@ export default function Skills() {
                   const strokeDashoffset = circumference - (circumference * skill.level) / 100;
 
                   return (
-                    <div key={sIdx} className="circular-meter-box">
-
-                      {/* Dial Circle SVG container */}
+                    <div
+                      key={sIdx}
+                      className="circular-meter-box"
+                      style={{
+                        animationDelay: `${0.3 + sIdx * 0.08}s`,
+                        transitionDelay: isClosing ? `${(selectedCategory.skills.length - 1 - sIdx) * 0.05}s` : '0s'
+                      }}
+                    >
                       <div className="dial-circle-outer-ring">
                         <svg className="dial-circle-svg" viewBox="0 0 100 100">
-                          {/* Background track */}
                           <circle
                             cx="50"
                             cy="50"
                             r={radius}
-                            stroke="rgba(255, 255, 255, 0.04)"
+                            stroke="rgba(255, 255, 255, 0.06)"
                             strokeWidth={stroke}
                             fill="none"
                           />
-                          {/* Foreground colored progress arc */}
                           <circle
                             cx="50"
                             cy="50"
@@ -364,25 +526,20 @@ export default function Skills() {
                           />
                           <defs>
                             <linearGradient id="dial-grad-3" x1="0%" y1="0%" x2="100%" y2="100%">
-                              <stop offset="0%" stopColor="var(--color-primary)" />
-                              <stop offset="100%" stopColor="var(--color-secondary)" />
+                              <stop offset="0%" stopColor="var(--color-primary, #61dafb)" />
+                              <stop offset="100%" stopColor="var(--color-secondary, #a259ff)" />
                             </linearGradient>
                           </defs>
                         </svg>
 
-                        {/* Centered Brand Icon */}
                         <div className="dial-inner-brand-icon">
                           {skill.icon}
                         </div>
                       </div>
 
-                      {/* Title & Desc */}
                       <h4 className="dial-skill-title">{skill.name}</h4>
                       <p className="dial-skill-desc">{skill.desc}</p>
-
-                      {/* Percentage */}
                       <div className="dial-skill-percentage gradient-text">{skill.level}%</div>
-
                     </div>
                   );
                 })}
@@ -390,7 +547,19 @@ export default function Skills() {
 
             </div>
           </div>
+        </div>
+      )}
 
+      {/* Tab Close Shutter Animation Overlay */}
+      {showCloseAnimation && (
+        <div className={`tab-close-animation-overlay ${animationState}`}>
+          <div className="shutter-pane shutter-left"></div>
+          <div className="shutter-pane shutter-right"></div>
+          <div className="tab-close-center-badge">
+            <X className="tab-close-icon" size={24} />
+            <div className="tab-close-text">TAB CLOSED</div>
+            <div className="tab-close-scanline"></div>
+          </div>
         </div>
       )}
     </section>

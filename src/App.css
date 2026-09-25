@@ -13,27 +13,7 @@ section {
 /* --- Reveal on Scroll Base CSS --- */
 .reveal {
   opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1),
-    transform 1s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.reveal.active {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Delay modifiers for scroll reveals */
-.reveal-delay-1 {
-  transition-delay: 0.15s;
-}
-
-.reveal-delay-2 {
-  transition-delay: 0.3s;
-}
-
-.reveal-delay-3 {
-  transition-delay: 0.45s;
+  will-change: transform, opacity;
 }
 
 
@@ -472,6 +452,7 @@ section {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -482,6 +463,7 @@ section {
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -493,6 +475,7 @@ section {
     opacity: 0;
     transform: translateX(-120px) rotateY(-15deg);
   }
+
   to {
     opacity: 1;
     transform: translateX(0) rotateY(0);
@@ -519,8 +502,20 @@ section {
 .skill-detail-fullscreen-overlay.closing {
   opacity: 0 !important;
   pointer-events: none;
-  transition: opacity 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   animation: none !important;
+}
+
+.skill-detail-fullscreen-overlay.closing .premium-back-circle-btn {
+  transform: rotate(-360deg) scale(0) !important;
+  opacity: 0 !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+
+.skill-detail-fullscreen-overlay.closing .premium-back-label {
+  transform: translateX(-40px) !important;
+  opacity: 0 !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
 }
 
 .detail-header-nav-fixed {
@@ -538,8 +533,8 @@ section {
 
 .skill-detail-fullscreen-overlay.closing .detail-header-nav-fixed {
   opacity: 0 !important;
-  transform: translateY(-80px) !important;
-  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;
+  transform: translateY(-30px) !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
   animation: none !important;
 }
 
@@ -590,8 +585,8 @@ section {
 
 .skill-detail-fullscreen-overlay.closing .detail-glass-left-card {
   opacity: 0 !important;
-  transform: translate(-100vw, 80px) rotate(-25deg) !important;
-  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease;
+  transform: translateX(-60px) scale(0.92) rotateY(-8deg) !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
   animation: none !important;
 }
 
@@ -691,6 +686,7 @@ section {
     opacity: 0;
     transform: scale(0.6);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -702,6 +698,7 @@ section {
     opacity: 0;
     transform: translateX(120px) rotateY(15deg);
   }
+
   to {
     opacity: 1;
     transform: translateX(0) rotateY(0);
@@ -721,8 +718,8 @@ section {
 
 .skill-detail-fullscreen-overlay.closing .wave-connection-graphic {
   opacity: 0 !important;
-  transform: scale(0) !important;
-  transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;
+  transform: scale(0.7) !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
   animation: none !important;
 }
 
@@ -755,8 +752,8 @@ section {
 
 .skill-detail-fullscreen-overlay.closing .detail-progress-right-grid {
   opacity: 0 !important;
-  transform: translate(100vw, 80px) rotate(25deg) !important;
-  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease;
+  transform: translateX(60px) scale(0.92) rotateY(8deg) !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
   animation: none !important;
 }
 
@@ -916,13 +913,13 @@ section {
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 15px 35px var(--glass-shadow);
-  transition: all var(--transition-normal);
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
   display: flex;
   flex-direction: column;
+  transform-style: preserve-3d;
 }
 
 .project-card:hover {
-  transform: translateY(-8px);
   border-color: var(--glass-border-hover);
   box-shadow: 0 25px 50px rgba(16, 185, 129, 0.15);
 }
@@ -1096,6 +1093,26 @@ section {
   display: flex;
   align-items: center;
   gap: 1.2rem;
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+.method-icon {
+  transition: background-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+a.contact-method:hover {
+  transform: translateX(6px);
+  opacity: 0.95;
+}
+
+a.contact-method:hover .method-icon {
+  background-color: var(--color-primary);
+  color: var(--color-bg-darkest);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+
+a.contact-method:hover .contact-link {
+  color: var(--color-primary);
 }
 
 .method-icon {
@@ -1522,6 +1539,7 @@ textarea.form-input {
 .shard-row:nth-child(odd) {
   transform: translateX(-100%);
 }
+
 .shard-row:nth-child(odd)::after {
   right: 0;
 }
@@ -1529,6 +1547,7 @@ textarea.form-input {
 .shard-row:nth-child(even) {
   transform: translateX(100%);
 }
+
 .shard-row:nth-child(even)::after {
   left: 0;
 }
@@ -1538,23 +1557,45 @@ textarea.form-input {
   transform: translateX(0);
 }
 
-.shards-overlay.active .shard-row:nth-child(1) { transition-delay: 0ms; }
-.shards-overlay.active .shard-row:nth-child(2) { transition-delay: 60ms; }
-.shards-overlay.active .shard-row:nth-child(3) { transition-delay: 120ms; }
-.shards-overlay.active .shard-row:nth-child(4) { transition-delay: 180ms; }
+.shards-overlay.active .shard-row:nth-child(1) {
+  transition-delay: 0ms;
+}
+
+.shards-overlay.active .shard-row:nth-child(2) {
+  transition-delay: 60ms;
+}
+
+.shards-overlay.active .shard-row:nth-child(3) {
+  transition-delay: 120ms;
+}
+
+.shards-overlay.active .shard-row:nth-child(4) {
+  transition-delay: 180ms;
+}
 
 /* Staggered delay for slide out (opening) in reverse */
-.shards-overlay:not(.active) .shard-row:nth-child(1) { transition-delay: 180ms; }
-.shards-overlay:not(.active) .shard-row:nth-child(2) { transition-delay: 120ms; }
-.shards-overlay:not(.active) .shard-row:nth-child(3) { transition-delay: 60ms; }
-.shards-overlay:not(.active) .shard-row:nth-child(4) { transition-delay: 0ms; }
+.shards-overlay:not(.active) .shard-row:nth-child(1) {
+  transition-delay: 180ms;
+}
+
+.shards-overlay:not(.active) .shard-row:nth-child(2) {
+  transition-delay: 120ms;
+}
+
+.shards-overlay:not(.active) .shard-row:nth-child(3) {
+  transition-delay: 60ms;
+}
+
+.shards-overlay:not(.active) .shard-row:nth-child(4) {
+  transition-delay: 0ms;
+}
 
 .shards-overlay.active {
   pointer-events: all;
 }
 
 /* Organic scale-down and blur on Skills details as shutters slide closed */
-.shards-overlay.active ~ main .skill-detail-fullscreen-overlay {
+.shards-overlay.active~main .skill-detail-fullscreen-overlay {
   opacity: 0.1;
   transform: scale(0.96);
   filter: blur(4px);

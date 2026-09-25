@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, MessageSquare, Terminal } from 'lucide-react';
+import profileImg from './assets/profile.webp';
 
 const ROLES = [
   'Frontend Developer',
@@ -9,7 +10,7 @@ const ROLES = [
   'Creative Web Engineer'
 ];
 
-export default function Hero() {
+export default function Hero() { 
   const [roleIndex, setRoleIndex] = useState(0);
   const [fadeClass, setFadeClass] = useState('fade-in-active');
 
@@ -89,7 +90,7 @@ export default function Hero() {
             <div className="profile-frame">
               <div className="ring-deco"></div>
               <img
-                src="/profile.png"
+                src={profileImg}
                 alt="Alex Carter Profile"
                 className="profile-image"
                 onError={(e) => {

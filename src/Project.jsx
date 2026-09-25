@@ -18,34 +18,30 @@ const GithubIcon = ({ size = 20 }) => (
   </svg>
 );
 
-
 const PROJECTS_DATA = [
   {
-    title: 'Nova Commerce',
-    subtitle: 'Headless E-Commerce Platform',
-    desc: 'A premium React-based shopping platform featuring seamless cart functionality, Stripe payment gateway, and a headless GraphQL backend for rapid content delivery.',
-    tags: ['React', 'GraphQL', 'Stripe', 'CSS Modules'],
-    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&auto=format&fit=crop&q=80',
-    demoUrl: 'https://example.com',
-    githubUrl: 'https://github.com'
+    title: 'Auth E-Commerce',
+    subtitle: 'Secure Shopping Platform',
+    desc: 'A modern e-commerce website featuring user registration, login authentication, secure session handling, product catalogs, shopping cart management, and interactive checkout. Built with HTML, CSS, JS, and React.',
+    tags: ['HTML', 'CSS', 'JavaScript', 'React'],
+    image: 'https://images.unsplash.com/photo-1557821552-17105176677c?q=80&w=800&auto=format&fit=crop',
+    demoUrl: 'https://auth-commerce-demo.vercel.app/'
   },
   {
-    title: 'Aether Analytics',
-    subtitle: 'Real-Time Insights Dashboard',
-    desc: 'An interactive analytics suite presenting live socket data feeds. Built with D3.js visualization charts, grid-based layouts, and responsive dark themes.',
-    tags: ['React', 'D3.js', 'Socket.io', 'Node.js'],
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=80',
-    demoUrl: 'https://example.com',
-    githubUrl: 'https://github.com'
+    title: 'Car Services',
+    subtitle: 'Automotive Booking & Care Platform',
+    desc: 'A premium, responsive website designed for automotive maintenance and car servicing. Features interactive booking scheduling, service details, pricing comparisons, and a modern customer dashboard.',
+    tags: ['React', 'CSS', 'JavaScript', 'Responsive Design'],
+    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop',
+    demoUrl: 'https://cars-services-olive.vercel.app/'
   },
   {
-    title: 'Synthesis Engine',
-    subtitle: 'AI Code Playground',
-    desc: 'An AI-integrated playground environment that generates, runs, and documents React code snippets, leveraging real-time OpenAI text streaming.',
-    tags: ['React', 'OpenAI API', 'Tailwind', 'Express'],
-    image: 'https://images.unsplash.com/photo-1618401471353-b98aedd07871?w=600&auto=format&fit=crop&q=80',
-    demoUrl: 'https://example.com',
-    githubUrl: 'https://github.com'
+    title: 'Project Title',
+    subtitle: 'Interactive Web Platform',
+    desc: 'A feature-rich web platform designed to solve real-world problems. Under development, click to see progress. (Placeholder project, customize it with your new project details).',
+    tags: ['React', 'CSS', 'JavaScript', 'API Integration'],
+    image: 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=800&auto=format&fit=crop',
+    demoUrl: 'https://github.com/'
   }
 ];
 
@@ -63,9 +59,13 @@ export default function Project() {
         {/* Projects Grid */}
         <div className="projects-grid">
           {PROJECTS_DATA.map((proj, idx) => (
-            <div
+            <a
               key={idx}
+              href={proj.demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className={`project-card reveal reveal-delay-${idx + 1}`}
+              style={{ textDecoration: 'none', color: 'inherit' }}
             >
               {/* Image & Overlay */}
               <div className="project-img-wrapper">
@@ -74,28 +74,14 @@ export default function Project() {
                   alt={proj.title}
                   className="project-img"
                   onError={(e) => {
-                    e.target.src = "https://images.unsplash.com/photo-1618401471353-b98aedd07871?w=600&auto=format&fit=crop&q=80";
+                    e.target.onerror = null; // Infinite loop rokne ke liye
+                    e.target.src = "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop";
                   }}
                 />
                 <div className="project-overlay">
-                  <a
-                    href={proj.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="project-link-icon"
-                    title="View Source on GitHub"
-                  >
-                    <GithubIcon size={20} />
-                  </a>
-                  <a
-                    href={proj.demoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="project-link-icon"
-                    title="Launch Live Demo"
-                  >
+                  <div className="project-link-icon" title="Launch Live Demo">
                     <ExternalLink size={20} />
-                  </a>
+                  </div>
                 </div>
               </div>
 
@@ -117,19 +103,14 @@ export default function Project() {
                     {proj.subtitle}
                   </span>
 
-                  <a
-                    href={proj.demoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="project-action-link"
-                  >
+                  <span className="project-action-link">
                     Live Demo
                     <ArrowUpRight size={16} />
-                  </a>
+                  </span>
                 </div>
               </div>
 
-            </div>
+            </a>
           ))}
         </div>
 
