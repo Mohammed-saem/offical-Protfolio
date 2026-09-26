@@ -92,7 +92,7 @@ export default function Contact() {
     const finalSubject = formData.subject === 'Other' ? formData.customSubject : formData.subject;
 
     try {
-      const response = await fetch('http://localhost:5000/api/contact', {
+      const response = await fetch('https://offical-protfolio.onrender.com/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -173,7 +173,7 @@ export default function Contact() {
                 </div>
               </a>
 
-              <a href="tel:+919461047417" className="contact-method">
+              <a href="tel:+9194610*****" className="contact-method">
                 <div className="method-icon">
                   <Phone size={20} />
                 </div>
@@ -181,7 +181,7 @@ export default function Contact() {
                   <h4>Phone</h4>
                   <p>
                     <span className="contact-link">
-                      +91 9461047417
+                      +91 946104****
                     </span>
                   </p>
                 </div>
