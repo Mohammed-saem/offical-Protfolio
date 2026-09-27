@@ -9,8 +9,14 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
+
+app.use((req, res, next) => {
+    console.log('Incoming origin:', req.headers.origin);
+    next();
+});
+
 app.use(cors({
-  origin: 'https://offical-portfolio.vercel.app'
+    origin: 'https://offical-portfolio.vercel.app'
 }));
 
 mongoose.connect(process.env.MONGO_URI)
@@ -70,4 +76,5 @@ app.post('/api/contact', async (req, res) => {
     }
 });
 
-app.listen(process.env.PORT || 5000, () => console.log('Server running on port 5000'));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
