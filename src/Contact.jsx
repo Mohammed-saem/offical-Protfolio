@@ -53,6 +53,10 @@ const TwitterIcon = ({ size = 20 }) => (
   </svg>
 );
 
+const API_URL = import.meta.env.DEV
+  ? 'http://localhost:5000/api/contact'
+  : 'https://offical-protfolio.onrender.com/api/contact';
+
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
@@ -71,7 +75,6 @@ export default function Contact() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // REAL API INTEGRATION WITH NODEJS & MONGODB BACKEND
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -88,11 +91,10 @@ export default function Contact() {
     setIsSubmitting(true);
     setStatus({ type: '', message: '' });
 
-
     const finalSubject = formData.subject === 'Other' ? formData.customSubject : formData.subject;
 
     try {
-      const response = await fetch('http://localhost:5000/api/contact', {
+      const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,16 +144,13 @@ export default function Contact() {
     <section id="contact">
       <div className="container">
 
-        {/* Section Header */}
         <div className="section-header reveal">
           <span className="section-subtitle">Let's Connect</span>
           <h2 className="section-title">Get In Touch</h2>
         </div>
 
-        {/* Contact Layout */}
         <div className="contact-wrapper">
 
-          {/* Details Column */}
           <div className="contact-details reveal">
             <h3 className="contact-lead">Let's collaborate on your next digital product.</h3>
             <p className="contact-text">
@@ -198,7 +197,6 @@ export default function Contact() {
               </div>
             </div>
 
-            {/* Social Links */}
             <div className="socials-list">
               <a
                 href="https://github.com"
@@ -230,7 +228,6 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Form Column */}
           <div className="reveal reveal-delay-2">
             <form onSubmit={handleSubmit} className="contact-form">
               <div className="form-row">
@@ -343,7 +340,6 @@ export default function Contact() {
 
         </div>
 
-        {/* Footer Area */}
         <div className="footer-bar reveal">
           <div className="footer-logo">
             <span>M.Saem</span> /
