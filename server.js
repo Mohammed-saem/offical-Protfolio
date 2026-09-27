@@ -10,7 +10,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-  origin: 'https://tumhara-vercel-domain.vercel.app'
+  origin: 'https://offical-portfolio.vercel.app'
 }));
 
 mongoose.connect(process.env.MONGO_URI)
