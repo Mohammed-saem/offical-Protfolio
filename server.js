@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
-app.use(cors());    
+app.use(cors());
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB Connected Successfully!'))
@@ -27,7 +27,9 @@ const contactSchema = new mongoose.Schema({
 const Contact = mongoose.model('Contact', contactSchema);
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
@@ -41,22 +43,24 @@ app.post('/api/contact', async (req, res) => {
         const newContact = new Contact({ name, email, phone, subject, message });
         await newContact.save();
 
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: process.env.EMAIL_USER,
-            subject: `Portfolio [${subject}]: from ${name}`,
-            html: `
-        <h3>New Contact Form Submission</h3>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-        <p><strong>Subject:</strong> ${subject}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message}</p>
-      `
-        };
-
-        await transporter.sendMail(mailOptions);
+        try {
+            await transporter.sendMail({
+                from: process.env.EMAIL_USER,
+                to: process.env.EMAIL_USER,
+                subject: `Portfolio [${subject}]: from ${name}`,
+                html: `
+                    <h3>New Contact Form Submission</h3>
+                    <p><strong>Name:</strong> ${name}</p>
+                    <p><strong>Email:</strong> ${email}</p>
+                    <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+                    <p><strong>Subject:</strong> ${subject}</p>
+                    <p><strong>Message:</strong></p>
+                    <p>${message}</p>
+                `
+            });
+        } catch (mailError) {
+            console.error('Mail Error:', mailError.message);
+        }
 
         res.status(200).json({ success: true, message: 'Message sent successfully!' });
     } catch (error) {

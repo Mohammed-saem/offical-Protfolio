@@ -88,11 +88,11 @@ export default function Contact() {
     setIsSubmitting(true);
     setStatus({ type: '', message: '' });
 
-    // Agar Subject "Other" hai toh customSubject bhejenge
+
     const finalSubject = formData.subject === 'Other' ? formData.customSubject : formData.subject;
 
     try {
-      const response = await fetch('https://offical-protfolio.onrender.com/api/contact', {
+      const response = await fetch('http://localhost:5000/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
