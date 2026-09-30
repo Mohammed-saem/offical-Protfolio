@@ -16,9 +16,6 @@ app.use((req, res, next) => {
     next();
 });
 
-
-mongoose.connect(process.env.MONGO_URI)
-
 mongoose.connect(process.env.MONGO_URI, {
     serverSelectionTimeoutMS: 8000
 })
@@ -49,6 +46,54 @@ const transporter = nodemailer.createTransport({
     socketTimeout: 15000
 });
 
+async function sendNotification({ name, email, phone, subject, message }) {
+    const html = `
+        <h3>New Contact Form Submission</h3>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Message:</strong></p>
+        <p>${message}</p>
+    `;
+    const mailSubject = `Portfolio [${subject}]: from ${name}`;
+
+    if (process.env.RESEND_API_KEY) {
+        const response = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                from: 'Portfolio <onboarding@resend.dev>',
+                to: [process.env.RESEND_TO || process.env.EMAIL_USER],
+                reply_to: email,
+                subject: mailSubject,
+                html
+            })
+        });
+
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`Resend ${response.status}: ${text}`);
+        }
+        return 'resend';
+    }
+
+    await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: process.env.EMAIL_USER,
+        subject: mailSubject,
+        html
+    });
+    return 'gmail';
+}
+
+app.get('/', (req, res) => {
+    res.json({ ok: true, db: mongoose.connection.readyState });
+});
+
 app.post('/api/contact', async (req, res) => {
     const { name, email, phone, subject, message } = req.body;
     console.log('Form received from:', name);
@@ -58,22 +103,8 @@ app.post('/api/contact', async (req, res) => {
         await newContact.save();
         console.log('Saved to MongoDB');
 
-       
-        transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: process.env.EMAIL_USER,
-            subject: `Portfolio [${subject}]: from ${name}`,
-            html: `
-                <h3>New Contact Form Submission</h3>
-                <p><strong>Name:</strong> ${name}</p>
-                <p><strong>Email:</strong> ${email}</p>
-                <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-                <p><strong>Subject:</strong> ${subject}</p>
-                <p><strong>Message:</strong></p>
-                <p>${message}</p>
-            `
-        })
-            .then(() => console.log('Mail sent'))
+        sendNotification({ name, email, phone, subject, message })
+            .then((via) => console.log('Mail sent via', via))
             .catch((mailError) => console.error('Mail Error:', mailError.message));
 
         res.status(200).json({ success: true, message: 'Message sent successfully!' });
