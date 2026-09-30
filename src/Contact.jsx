@@ -172,8 +172,8 @@ export default function Contact() {
                 </div>
               </a>
 
-              {/* TODO: yahan apna asli phone number daalo (dono jagah) */}
-              <a href="tel:+919461047417" className="contact-method">
+       
+              <a href="tel:+9194610*****" className="contact-method">
                 <div className="method-icon">
                   <Phone size={20} />
                 </div>
@@ -181,7 +181,7 @@ export default function Contact() {
                   <h4>Phone</h4>
                   <p>
                     <span className="contact-link">
-                      +91 94610 47417
+                      +91 94610*****
                     </span>
                   </p>
                 </div>
