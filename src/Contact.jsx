@@ -53,20 +53,22 @@ const TwitterIcon = ({ size = 20 }) => (
   </svg>
 );
 
+
 const API_URL = import.meta.env.DEV
   ? 'http://localhost:5000/api/contact'
   : 'https://offical-protfolio.onrender.com/api/contact';
 
-export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: 'Project Inquiry',
-    customSubject: '',
-    message: ''
-  });
+const INITIAL_FORM = {
+  name: '',
+  email: '',
+  phone: '',
+  subject: 'Project Inquiry',
+  customSubject: '',
+  message: ''
+};
 
+export default function Contact() {
+  const [formData, setFormData] = useState(INITIAL_FORM);
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -93,12 +95,15 @@ export default function Contact() {
 
     const finalSubject = formData.subject === 'Other' ? formData.customSubject : formData.subject;
 
+    const controller = new AbortController();
+   
+    const timer = setTimeout(() => controller.abort(), 60000);
+
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
@@ -107,22 +112,14 @@ export default function Contact() {
           message: formData.message
         }),
       });
-
-      const data = await response.json();
+     const data = await response.json();
 
       if (response.ok && data.success) {
         setStatus({
           type: 'success',
-          message: 'Thank you! Your message has been saved & sent successfully.'
+          message: 'Thank you! Your message has been sent successfully.'
         });
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          subject: 'Project Inquiry',
-          customSubject: '',
-          message: ''
-        });
+        setFormData(INITIAL_FORM);
       } else {
         setStatus({
           type: 'error',
@@ -133,9 +130,12 @@ export default function Contact() {
       console.error('API Error:', error);
       setStatus({
         type: 'error',
-        message: 'Server error. Please check if your Node server is running on port 5000.'
+        message: error.name === 'AbortError'
+          ? 'Server is taking too long to respond. Please try again.'
+          : 'Something went wrong. Please try again later.'
       });
     } finally {
+      clearTimeout(timer);
       setIsSubmitting(false);
     }
   };
@@ -172,7 +172,8 @@ export default function Contact() {
                 </div>
               </a>
 
-              <a href="tel:+9194610*****" className="contact-method">
+              {/* TODO: yahan apna asli phone number daalo (dono jagah) */}
+              <a href="tel:+919461047417" className="contact-method">
                 <div className="method-icon">
                   <Phone size={20} />
                 </div>
@@ -180,7 +181,7 @@ export default function Contact() {
                   <h4>Phone</h4>
                   <p>
                     <span className="contact-link">
-                      +91 946104****
+                      +91 94610 47417
                     </span>
                   </p>
                 </div>

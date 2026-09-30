@@ -9,19 +9,21 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 app.use((req, res, next) => {
     console.log('Incoming origin:', req.headers.origin);
     next();
 });
 
-app.use(cors({
-    origin: 'https://offical-portfolio.vercel.app'
-}));
 
 mongoose.connect(process.env.MONGO_URI)
+
+mongoose.connect(process.env.MONGO_URI, {
+    serverSelectionTimeoutMS: 8000
+})
     .then(() => console.log('MongoDB Connected Successfully!'))
-    .catch((err) => console.log('DB Error:', err));
+    .catch((err) => console.log('DB Error:', err.message));
 
 const contactSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -41,37 +43,42 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-    }
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000
 });
 
 app.post('/api/contact', async (req, res) => {
     const { name, email, phone, subject, message } = req.body;
+    console.log('Form received from:', name);
 
     try {
         const newContact = new Contact({ name, email, phone, subject, message });
         await newContact.save();
+        console.log('Saved to MongoDB');
 
-        try {
-            await transporter.sendMail({
-                from: process.env.EMAIL_USER,
-                to: process.env.EMAIL_USER,
-                subject: `Portfolio [${subject}]: from ${name}`,
-                html: `
-                    <h3>New Contact Form Submission</h3>
-                    <p><strong>Name:</strong> ${name}</p>
-                    <p><strong>Email:</strong> ${email}</p>
-                    <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-                    <p><strong>Subject:</strong> ${subject}</p>
-                    <p><strong>Message:</strong></p>
-                    <p>${message}</p>
-                `
-            });
-        } catch (mailError) {
-            console.error('Mail Error:', mailError.message);
-        }
+       
+        transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: process.env.EMAIL_USER,
+            subject: `Portfolio [${subject}]: from ${name}`,
+            html: `
+                <h3>New Contact Form Submission</h3>
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+                <p><strong>Subject:</strong> ${subject}</p>
+                <p><strong>Message:</strong></p>
+                <p>${message}</p>
+            `
+        })
+            .then(() => console.log('Mail sent'))
+            .catch((mailError) => console.error('Mail Error:', mailError.message));
 
         res.status(200).json({ success: true, message: 'Message sent successfully!' });
     } catch (error) {
+        console.error('Save Error:', error.message);
         res.status(500).json({ success: false, error: error.message });
     }
 });
