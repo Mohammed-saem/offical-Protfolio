@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, MessageSquare, Terminal } from 'lucide-react';
-import profileImg from './assets/profile.webp';
 
 const ROLES = [
-  'Frontend Developer',
-  'UI/UX Enthusiast',
+  'Full Stack Web Developer',
+  'MERN Stack Developer',
   'React JS Developer',
-  'Creative Web Engineer'
+  'Node.js Developer'
 ];
 
-export default function Hero() { 
+export default function Hero() {
   const [roleIndex, setRoleIndex] = useState(0);
   const [fadeClass, setFadeClass] = useState('fade-in-active');
 
@@ -18,28 +17,25 @@ export default function Hero() {
     const interval = setInterval(() => {
       setFadeClass('fade-out-active');
 
-      // Wait for fade out animation to finish before updating role content
       const timer = setTimeout(() => {
         setRoleIndex((prev) => (prev + 1) % ROLES.length);
         setFadeClass('fade-in-active');
       }, 300);
 
       return () => clearTimeout(timer);
-    }, 2000); // rotates every 2 seconds
+    }, 2000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
     <section id="hero">
-      {/* Background shapes */}
       <div className="bg-blob bg-blob-1"></div>
       <div className="bg-blob bg-blob-2"></div>
 
       <div className="container">
         <div className="hero-wrapper">
 
-          {/* Hero Left Content */}
           <div className="hero-content reveal">
             <div className="hero-tagline animate-fade-in">
               <Terminal size={14} style={{ marginRight: '6px', verticalAlign: 'middle', display: 'inline-block' }} />
@@ -54,9 +50,9 @@ export default function Hero() {
               </span>
             </h1>
 
-            <p className="hero-desc reveal-delay-2">
-              I'm a creative developer specializing in building premium, high-performance web applications using React. I bridge the gap between stunning visual design and clean, interactive frontend engineering.
-            </p>
+         <p className="hero-desc reveal-delay-2">
+  I'm a Full Stack Web Developer specializing in the MERN stack. I build fast, responsive web applications with React on the frontend and Node.js, Express and MongoDB on the backend, from the user interface to the database.
+</p>
 
             <div className="hero-actions reveal-delay-3">
               <Link
@@ -85,19 +81,12 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Hero Right Image */}
           <div className="hero-image-area reveal reveal-delay-2">
             <div className="profile-frame">
               <div className="ring-deco"></div>
-              <img
-                src={profileImg}
-                alt="Alex Carter Profile"
-                className="profile-image"
-                onError={(e) => {
-                  // Fallback to high quality avatar icon if image fails to load
-                  e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80";
-                }}
-              />
+              <div className="profile-monogram">
+                <span className="gradient-text">MS</span>
+              </div>
             </div>
           </div>
 

@@ -1,6 +1,7 @@
-import { Layout, Cpu, Server, ArrowLeft, Terminal, Check, X } from 'lucide-react';
+
+import { Cpu, Server, ArrowLeft, Terminal, Check, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
-/* --- Brand SVGs --- */
+
 const ReactIcon = () => (
   <svg viewBox="-11.5 -10.23174 23 20.46348" width="20" height="20" style={{ filter: 'drop-shadow(0 0 6px #61dafb)' }}>
     <circle cx="0" cy="0" r="2.05" fill="#61dafb" />
@@ -19,28 +20,37 @@ const JSIcon = () => (
   </svg>
 );
 
-const TSIcon = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20" style={{ filter: 'drop-shadow(0 0 6px #3178c6)' }}>
-    <rect width="24" height="24" rx="4" fill="#3178c6" />
-    <path d="M15.5 10.5h-3V18H11v-7.5H8V9h7.5v1.5zM16.5 15h2c0 .8.6 1.3 1.5 1.3.8 0 1.2-.4 1.2-.9s-.3-.7-.9-.9l-1-.3c-1.3-.3-2.1-1-2.1-2.2 0-1.5 1.2-2.3 2.8-2.3s2.7.8 2.7 2.3h-2c0-.7-.5-1.1-1.2-1.1s-1 .3-1 .8c0 .4.3.6.9.8l1 .3c1.3.3 2.1 1 2.1 2.3 0 1.5-1.2 2.5-3 2.5s-3-1-3-2.7z" fill="#ffffff" />
-  </svg>
-);
-
 const HTMLIcon = () => (
   <svg viewBox="0 0 24 24" width="22" height="22" style={{ filter: 'drop-shadow(0 0 6px #e34f26)' }}>
     <path d="M2 2h20l-2 18-8 3-8-3L2 2zm13.7 8H9.3l-.2-2h6.8l-.2-2H7l.6 6h6l-.4 3.5-3.2 1-3.2-1-.2-2.2H4.6l.4 4.2 5 1.8 5-1.8.6-6.3z" fill="#e34f26" />
   </svg>
 );
 
-const TailwindIcon = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" style={{ filter: 'drop-shadow(0 0 6px #06b6d4)' }}>
-    <path d="M12 .587l3.668 5.568 5.618.818-4.062 3.96 1.036 5.599L12 13.91l-5.26 2.622 1.036-5.599-4.062-3.96 5.618-.818L12 .587z" fill="#06b6d4" />
+const CSSIcon = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" style={{ filter: 'drop-shadow(0 0 6px #2965f1)' }}>
+    <path fill="#264de4" d="M2 2h20l-2 18-8 3-8-3L2 2z" />
+    <path fill="#2965f1" d="M12 3.8v17.4l6.4-2.4 1.7-15H12z" />
+    <path fill="#ebebeb" d="M12 7.8H7.3l.3 3.3H12V7.8zm0 5.6H9.7l.2 2.2 2.1.6V19l-4.1-1.1-.3-3.1H5.4l.5 5.2 6.1 1.7V13.4z" />
+    <path fill="#ffffff" d="M12 7.8v3.3h4.4l-.4 4.5-4 1.1v2.8l6.3-1.8.8-9.9H12z" />
   </svg>
 );
 
 const NodeIcon = () => (
   <svg viewBox="0 0 24 24" width="22" height="22" style={{ filter: 'drop-shadow(0 0 6px #3c873a)' }}>
     <path d="M12 2L2.5 7.5v11L12 22l9.5-5.5v-11L12 2zm0 2.5l7.5 4.3v8.4L12 19.5l-7.5-4.3v-8.4L12 4.5zm-2.5 5.5v3.5c0 .8.7 1.5 1.5 1.5s1.5-.7 1.5-1.5V10h2v3.5c0 1.9-1.6 3.5-3.5 3.5s-3.5-1.6-3.5-3.5V10h2z" fill="#3c873a" />
+  </svg>
+);
+
+const ExpressIcon = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" style={{ filter: 'drop-shadow(0 0 6px #ffffff)' }}>
+    <rect width="24" height="24" rx="4" fill="#ffffff" />
+    <text x="12" y="16.5" fill="#000000" fontSize="11" fontWeight="800" fontFamily="system-ui, sans-serif" textAnchor="middle">ex</text>
+  </svg>
+);
+
+const MongoIcon = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" style={{ filter: 'drop-shadow(0 0 6px #47a248)' }}>
+    <path d="M12 2c-.3 0-5.7 6.1-5.7 10.3 0 3.3 2.6 6 5.7 6s5.7-2.7 5.7-6C17.7 8.1 12.3 2 12 2zm0 16.3c-2.3 0-4.2-1.9-4.2-4.3 0-3.3 3.9-8.3 4.2-8.3s4.2 5 4.2 8.3c0 2.4-1.9 4.3-4.2 4.3z" fill="#47a248" />
   </svg>
 );
 
@@ -54,22 +64,22 @@ const GitIcon = () => (
   </svg>
 );
 
-const FigmaIcon = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20" style={{ filter: 'drop-shadow(0 0 6px #a259ff)' }}>
-    <path d="M12 2a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4zm-4 8a4 4 0 0 0 4 4 4 4 0 0 0 4-4v4a4 4 0 0 0-4 4 4 4 0 0 0-4-4zm0 8a4 4 0 0 0 4 4v-4a4 4 0 0 0-4-4 4 4 0 0 0 0 4zm0-8a4 4 0 0 0-4-4 4 4 0 0 0 4 4V10zm8 0a4 4 0 0 0 4-4 4 4 0 0 0-4 4v-4z" fill="#a259ff" />
+const GithubIcon = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="#ffffff" style={{ filter: 'drop-shadow(0 0 6px #ffffff)' }}>
+    <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
   </svg>
 );
 
-const MongoIcon = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20" style={{ filter: 'drop-shadow(0 0 6px #47a248)' }}>
-    <path d="M12 2c-.3 0-5.7 6.1-5.7 10.3 0 3.3 2.6 6 5.7 6s5.7-2.7 5.7-6C17.7 8.1 12.3 2 12 2zm0 16.3c-2.3 0-4.2-1.9-4.2-4.3 0-3.3 3.9-8.3 4.2-8.3s4.2 5 4.2 8.3c0 2.4-1.9 4.3-4.2 4.3z" fill="#47a248" />
+const VSCodeIcon = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" style={{ filter: 'drop-shadow(0 0 6px #007acc)' }}>
+    <path fill="#007acc" d="M17.583 2.001a1.492 1.492 0 0 0-.962.375L7.26 10.297l-4.22-3.21a.75.75 0 0 0-1.036.126l-1.63 2.04a.75.75 0 0 0 .114 1.042l4.08 3.204-4.08 3.203a.75.75 0 0 0-.114 1.042l1.63 2.04a.75.75 0 0 0 1.036.126l4.22-3.21 9.36 7.922a1.5 1.5 0 0 0 2.47-.962V2.883a1.5 1.5 0 0 0-1.547-1.507c-.004 0-.008 0-.012.001zm-.583 4.887v10.224l-6.61-5.112 6.61-5.112z" />
   </svg>
 );
 
 const SKILLS_DATA = [
   {
     id: 'frontend',
-    category: 'Frontend Development',
+    category: 'Fronted Service',
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <rect width="20" height="16" x="2" y="4" rx="2" />
@@ -77,12 +87,12 @@ const SKILLS_DATA = [
       </svg>
     ),
     desc: 'Engineering interactive, responsive, and pixel-perfect layouts using modern React patterns, state managers, and semantic styles.',
-    illustrations: [<ReactIcon key="react" />, <JSIcon key="js" />, <TSIcon key="ts" />, <HTMLIcon key="html" />, <TailwindIcon key="tailwind" />],
+    illustrations: [<HTMLIcon key="html" />, <CSSIcon key="css" />, <JSIcon key="js" />, <ReactIcon key="react" />],
     skills: [
-      { name: 'React (Hooks)', desc: 'Advanced state orchestration and component optimization.', level: 85, icon: <ReactIcon /> },
-      { name: 'JS', desc: 'Strict typing structures and functional programming paradigms.', level: 85, icon: <JSIcon /> },
-      { name: 'HTML & CSS', desc: 'Fluid grids, flexbox layouts, and browser-compliant schemas.', level: 95, icon: <HTMLIcon /> },
-      { name: 'Inline CSS & Tailwind CSS', desc: 'Rapid prototyping and utility-first responsive layout builds.', level: 85, icon: <TailwindIcon /> }
+      { name: 'HTML', desc: 'Fluid grids, flexbox layouts, and browser-compliant schemas.', level: 95, icon: <HTMLIcon /> },
+      { name: 'CSS', desc: 'Modern responsive layouts, animations, and styling systems.', level: 90, icon: <CSSIcon /> },
+      { name: 'JavaScript (ES6+)', desc: 'Strict typing structures and functional programming paradigms.', level: 85, icon: <JSIcon /> },
+      { name: 'React.js', desc: 'Advanced state orchestration and component optimization.', level: 85, icon: <ReactIcon /> }
     ],
     features: [
       'Declarative state UI rendering',
@@ -95,17 +105,16 @@ const SKILLS_DATA = [
     id: 'tools',
     category: 'Tools & Ecosystem',
     icon: <Cpu size={22} />,
-    desc: 'Orchestrating robust source control, package management, asset optimization, and Figma-to-code design pipeline handoffs.',
-    illustrations: [<GitIcon key="git" />, <FigmaIcon key="figma" />, <JSIcon key="js" />],
+    desc: 'Orchestrating robust source control, package management, asset optimization, and development workflows.',
+    illustrations: [<GitIcon key="git" />, <GithubIcon key="github" />, <VSCodeIcon key="vscode" />],
     skills: [
-      { name: 'Vite configs', desc: 'Asset splitting, module resolution, and server tuning.', level: 85, icon: <Cpu size={16} /> },
-      { name: 'Git versioning', desc: 'Conflict resolution, rebase sequences, and branch controls.', level: 90, icon: <GitIcon /> },
-      { name: 'Figma templates', desc: 'Reading vector nodes, grids, layouts, and spacing presets.', level: 80, icon: <FigmaIcon /> },
-      { name: 'Responsive views', desc: 'Responsive view grids, testing, and touch interfaces.', level: 95, icon: <Layout size={16} /> }
+      { name: 'Git', desc: 'Conflict resolution, rebase sequences, and branch controls.', level: 90, icon: <GitIcon /> },
+      { name: 'GitHub', desc: 'Remote repositories, pull requests, code reviews, and collaboration.', level: 85, icon: <GithubIcon /> },
+      { name: 'VS Code', desc: 'Productive code editing, debugging, extensions, and workspace setup.', level: 90, icon: <VSCodeIcon /> }
     ],
     features: [
       'Trunk-based branch architectures',
-      'Figma wireframe to code accuracy',
+      'Remote repository collaboration',
       'Fast client bundling build trees',
       'Lighthouse performance enhancements'
     ]
@@ -115,12 +124,11 @@ const SKILLS_DATA = [
     category: 'Backend & Services',
     icon: <Server size={22} />,
     desc: 'Developing scalable server scripts, clean RESTful schemas, GraphQL data layers, and database queries.',
-    illustrations: [<NodeIcon key="node" />, <MongoIcon key="mongo" />, <TSIcon key="ts" />],
+    illustrations: [<NodeIcon key="node" />, <ExpressIcon key="express" />, <MongoIcon key="mongo" />],
     skills: [
-      { name: 'Node.js & Express', desc: 'Middleware layers, routing logic, and error handlers.', level: 75, icon: <NodeIcon /> },
-      { name: 'RESTful API logic', desc: 'Resource pathing, status maps, and request queries.', level: 85, icon: <Server size={16} /> },
-      { name: 'MongoDB databases', desc: 'Document schemas, connections, and basic aggregates.', level: 70, icon: <MongoIcon /> },
-      { name: 'Headless CMS grids', desc: 'GraphQL querying, webhooks integration, and content feeds.', level: 75, icon: <Terminal size={16} /> }
+      { name: 'Node.js', desc: 'Server-side runtime, asynchronous event-driven architecture, and APIs.', level: 80, icon: <NodeIcon /> },
+      { name: 'Express.js', desc: 'Middleware layers, routing logic, and error handlers.', level: 80, icon: <ExpressIcon /> },
+      { name: 'MongoDB', desc: 'Document schemas, connections, and basic aggregates.', level: 75, icon: <MongoIcon /> }
     ],
     features: [
       'Modular Express routing middleware',
@@ -161,7 +169,7 @@ export default function Skills() {
       e.preventDefault();
       e.stopPropagation();
     }
-    // Step 1: Start exit transitions
+
     setIsClosing(true);
     setShowCloseAnimation(true);
     setAnimationState('closing-in');
@@ -368,13 +376,13 @@ export default function Skills() {
       `}</style>
 
       <div className="container">
-        {/* Section Header */}
+
         <div className="section-header reveal">
           <span className="section-subtitle">What I am good at</span>
           <h2 className="section-title">My Technical Expertise</h2>
         </div>
 
-        {/* Skills Grid */}
+
         <div className="skills-grid">
           {SKILLS_DATA.map((cat, idx) => (
             <div
@@ -412,10 +420,9 @@ export default function Skills() {
         </div>
       </div>
 
-      {/* Immersive Fullscreen Detail View Overlay (Fades in over SPA) */}
       {selectedCategory && (
         <div className={`skill-detail-fullscreen-overlay ${isClosing ? 'closing' : ''}`}>
-          {/* Fixed Nav Header */}
+
           <div className="detail-header-nav-fixed">
             <div className="premium-back-wrapper" onClick={handleCloseDetail}>
               <div className="premium-back-circle-btn">
@@ -425,14 +432,14 @@ export default function Skills() {
             </div>
 
             <div className="detail-header-logo">
-              <Terminal size={14} /> <span>MODULE://{selectedCategory.id.toUpperCase()}</span>
+              <Terminal size={14} />
             </div>
           </div>
 
-          {/* Main Content */}
+
           <div className="detail-content-center-container">
             <div className="detail-visual-wrapper">
-              {/* Left Column Card */}
+
               <div className="detail-glass-left-card">
                 <div className="detail-card-brand-metal-frame">
                   {selectedCategory.icon}
@@ -464,7 +471,7 @@ export default function Skills() {
                 </div>
               </div>
 
-              {/* Neon Wave Path */}
+
               <div className="wave-connection-graphic">
                 <svg className="connecting-sine-wave" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -484,7 +491,7 @@ export default function Skills() {
                 </svg>
               </div>
 
-              {/* Right Column Grid: Skill Dials */}
+
               <div className="detail-progress-right-grid">
                 {selectedCategory.skills.map((skill, sIdx) => {
                   const radius = 42;
@@ -550,7 +557,7 @@ export default function Skills() {
         </div>
       )}
 
-      {/* Tab Close Shutter Animation Overlay */}
+
       {showCloseAnimation && (
         <div className={`tab-close-animation-overlay ${animationState}`}>
           <div className="shutter-pane shutter-left"></div>
