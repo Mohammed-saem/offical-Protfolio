@@ -1,6 +1,5 @@
-
 import { Cpu, Server, ArrowLeft, Terminal, Check, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const ReactIcon = () => (
   <svg viewBox="-11.5 -10.23174 23 20.46348" width="20" height="20" style={{ filter: 'drop-shadow(0 0 6px #61dafb)' }}>
@@ -139,13 +138,123 @@ const SKILLS_DATA = [
   }
 ];
 
+function DetailContent({ category, isClosing }) {
+  const gradId = `dial-grad-${category.id}`;
+  const waveId = `neon-wave-grad-${category.id}`;
+
+  return (
+    <div className="detail-visual-wrapper">
+      <div className="detail-glass-left-card">
+        <div className="detail-card-brand-metal-frame">{category.icon}</div>
+
+        <h2 className="detail-card-heading-title">{category.category}</h2>
+
+        <p className="detail-card-sub-description">{category.desc}</p>
+
+        <div className="detail-card-divider-line"></div>
+
+        <h4 className="detail-card-pillars-label">KEY DEVELOPMENT PILLARS</h4>
+
+        <div className="detail-card-check-items">
+          {category.features.map((feat, fIdx) => (
+            <div key={fIdx} className="detail-card-check-item">
+              <div className="detail-check-circle-bullet">
+                <Check size={11} className="check-svg-node" />
+              </div>
+              <span>{feat}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="wave-connection-graphic">
+        <svg className="connecting-sine-wave" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M0,40 Q30,10 60,40 T120,40"
+            stroke={`url(#${waveId})`}
+            strokeWidth="2"
+            strokeDasharray="4 4"
+            className="flowing-wave-path"
+          />
+          <defs>
+            <linearGradient id={waveId} x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="var(--color-primary, #61dafb)" />
+              <stop offset="50%" stopColor="var(--color-secondary, #a259ff)" />
+              <stop offset="100%" stopColor="var(--color-primary, #61dafb)" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <div className="detail-progress-right-grid">
+        {category.skills.map((skill, sIdx) => {
+          const radius = 42;
+          const stroke = 5.5;
+          const circumference = 2 * Math.PI * radius;
+          const strokeDashoffset = circumference - (circumference * skill.level) / 100;
+
+          return (
+            <div
+              key={sIdx}
+              className="circular-meter-box"
+              style={{
+                animationDelay: `${0.3 + sIdx * 0.08}s`,
+                transitionDelay: isClosing ? `${(category.skills.length - 1 - sIdx) * 0.05}s` : '0s'
+              }}
+            >
+              <div className="dial-circle-outer-ring">
+                <svg className="dial-circle-svg" viewBox="0 0 100 100">
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r={radius}
+                    stroke="rgba(255, 255, 255, 0.06)"
+                    strokeWidth={stroke}
+                    fill="none"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r={radius}
+                    stroke={`url(#${gradId})`}
+                    strokeWidth={stroke}
+                    fill="none"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={strokeDashoffset}
+                    strokeLinecap="round"
+                    transform="rotate(-90 50 50)"
+                    className="dial-active-fill-ring"
+                  />
+                  <defs>
+                    <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="var(--color-primary, #61dafb)" />
+                      <stop offset="100%" stopColor="var(--color-secondary, #a259ff)" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+
+                <div className="dial-inner-brand-icon">{skill.icon}</div>
+              </div>
+
+              <h4 className="dial-skill-title">{skill.name}</h4>
+              <p className="dial-skill-desc">{skill.desc}</p>
+              <div className="dial-skill-percentage gradient-text">{skill.level}%</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function Skills() {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [isClosing, setIsClosing] = useState(false);
   const [showCloseAnimation, setShowCloseAnimation] = useState(false);
   const [animationState, setAnimationState] = useState('');
+  const [activeIndex, setActiveIndex] = useState(0);
+  const reelRef = useRef(null);
 
-  // Lock body scroll whenever overlay is open
   useEffect(() => {
     if (selectedCategoryId) {
       if (window.lenis) window.lenis.stop();
@@ -158,6 +267,14 @@ export default function Skills() {
       if (window.lenis) window.lenis.start();
       document.body.style.overflow = '';
     };
+  }, [selectedCategoryId]);
+
+  useEffect(() => {
+    if (selectedCategoryId && reelRef.current) {
+      const index = SKILLS_DATA.findIndex((c) => c.id === selectedCategoryId);
+      reelRef.current.scrollTop = index * reelRef.current.clientHeight;
+      setActiveIndex(index);
+    }
   }, [selectedCategoryId]);
 
   const handleCardClick = (catId) => {
@@ -174,18 +291,29 @@ export default function Skills() {
     setShowCloseAnimation(true);
     setAnimationState('closing-in');
 
-    // Step 2: Shutters meet in the middle at ~380ms, unmount detail view then
     setTimeout(() => {
       setSelectedCategoryId(null);
       setIsClosing(false);
       setAnimationState('opening-out');
     }, 380);
 
-    // Step 3: Shutters slide open completely at ~760ms, clean up
     setTimeout(() => {
       setShowCloseAnimation(false);
       setAnimationState('');
     }, 760);
+  };
+
+  const handleReelScroll = (e) => {
+    const box = e.currentTarget;
+    const index = Math.round(box.scrollTop / box.clientHeight);
+    setActiveIndex(index);
+  };
+
+  const goToSlide = (index) => {
+    const box = reelRef.current;
+    if (box) {
+      box.scrollTo({ top: index * box.clientHeight, behavior: 'smooth' });
+    }
   };
 
   const selectedCategory = SKILLS_DATA.find((c) => c.id === selectedCategoryId);
@@ -193,6 +321,80 @@ export default function Skills() {
   return (
     <section id="skills" style={{ position: 'relative' }}>
       <style>{`
+        .detail-reel {
+          position: absolute;
+          top: 70px;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          overflow-y: scroll;
+          scroll-snap-type: y mandatory;
+          scrollbar-width: none;
+        }
+
+        .detail-reel::-webkit-scrollbar {
+          display: none;
+        }
+
+        .reel-slide {
+          height: 100%;
+          scroll-snap-align: start;
+          scroll-snap-stop: always;
+          display: flex;
+          padding: 1rem;
+          box-sizing: border-box;
+          overflow-y: auto;
+          scrollbar-width: none;
+        }
+
+        .reel-slide::-webkit-scrollbar {
+          display: none;
+        }
+
+        .reel-slide > * {
+          margin: auto;
+        }
+
+        .reel-dots {
+          position: absolute;
+          right: 14px;
+          top: 50%;
+          transform: translateY(-50%);
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          z-index: 5;
+        }
+
+        .reel-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          border: none;
+          padding: 0;
+          background: rgba(255, 255, 255, 0.3);
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .reel-dot.active {
+          height: 22px;
+          border-radius: 6px;
+          background: var(--color-primary, #10b981);
+        }
+
+        .reel-hint {
+          position: absolute;
+          bottom: 10px;
+          left: 0;
+          right: 0;
+          text-align: center;
+          font-size: 0.8rem;
+          opacity: 0.6;
+          pointer-events: none;
+          z-index: 5;
+        }
+
         .premium-back-wrapper {
           display: flex;
           align-items: center;
@@ -221,7 +423,6 @@ export default function Skills() {
           transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
         }
 
-        /* Dial Entry & Exit Animations */
         @keyframes dial-fade-in {
           from {
             opacity: 0;
@@ -246,7 +447,6 @@ export default function Skills() {
           animation: none !important;
         }
 
-        /* Fullscreen Tab Close Animation Overlay */
         .tab-close-animation-overlay {
           position: fixed;
           top: 0;
@@ -382,7 +582,6 @@ export default function Skills() {
           <h2 className="section-title">My Technical Expertise</h2>
         </div>
 
-
         <div className="skills-grid">
           {SKILLS_DATA.map((cat, idx) => (
             <div
@@ -436,127 +635,32 @@ export default function Skills() {
             </div>
           </div>
 
-
-          <div className="detail-content-center-container">
-            <div className="detail-visual-wrapper">
-
-              <div className="detail-glass-left-card">
-                <div className="detail-card-brand-metal-frame">
-                  {selectedCategory.icon}
-                </div>
-
-                <h2 className="detail-card-heading-title">
-                  {selectedCategory.category}
-                </h2>
-
-                <p className="detail-card-sub-description">
-                  {selectedCategory.desc}
-                </p>
-
-                <div className="detail-card-divider-line"></div>
-
-                <h4 className="detail-card-pillars-label">
-                  KEY DEVELOPMENT PILLARS
-                </h4>
-
-                <div className="detail-card-check-items">
-                  {selectedCategory.features.map((feat, fIdx) => (
-                    <div key={fIdx} className="detail-card-check-item">
-                      <div className="detail-check-circle-bullet">
-                        <Check size={11} className="check-svg-node" />
-                      </div>
-                      <span>{feat}</span>
-                    </div>
-                  ))}
-                </div>
+          <div
+            className="detail-reel"
+            ref={reelRef}
+            onScroll={handleReelScroll}
+            data-lenis-prevent
+          >
+            {SKILLS_DATA.map((cat) => (
+              <div key={cat.id} className="reel-slide">
+                <DetailContent category={cat} isClosing={isClosing} />
               </div>
-
-
-              <div className="wave-connection-graphic">
-                <svg className="connecting-sine-wave" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M0,40 Q30,10 60,40 T120,40"
-                    stroke="url(#neon-wave-grad-3)"
-                    strokeWidth="2"
-                    strokeDasharray="4 4"
-                    className="flowing-wave-path"
-                  />
-                  <defs>
-                    <linearGradient id="neon-wave-grad-3" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="var(--color-primary, #61dafb)" />
-                      <stop offset="50%" stopColor="var(--color-secondary, #a259ff)" />
-                      <stop offset="100%" stopColor="var(--color-primary, #61dafb)" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-
-
-              <div className="detail-progress-right-grid">
-                {selectedCategory.skills.map((skill, sIdx) => {
-                  const radius = 42;
-                  const stroke = 5.5;
-                  const circumference = 2 * Math.PI * radius;
-                  const strokeDashoffset = circumference - (circumference * skill.level) / 100;
-
-                  return (
-                    <div
-                      key={sIdx}
-                      className="circular-meter-box"
-                      style={{
-                        animationDelay: `${0.3 + sIdx * 0.08}s`,
-                        transitionDelay: isClosing ? `${(selectedCategory.skills.length - 1 - sIdx) * 0.05}s` : '0s'
-                      }}
-                    >
-                      <div className="dial-circle-outer-ring">
-                        <svg className="dial-circle-svg" viewBox="0 0 100 100">
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r={radius}
-                            stroke="rgba(255, 255, 255, 0.06)"
-                            strokeWidth={stroke}
-                            fill="none"
-                          />
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r={radius}
-                            stroke="url(#dial-grad-3)"
-                            strokeWidth={stroke}
-                            fill="none"
-                            strokeDasharray={circumference}
-                            strokeDashoffset={strokeDashoffset}
-                            strokeLinecap="round"
-                            transform="rotate(-90 50 50)"
-                            className="dial-active-fill-ring"
-                          />
-                          <defs>
-                            <linearGradient id="dial-grad-3" x1="0%" y1="0%" x2="100%" y2="100%">
-                              <stop offset="0%" stopColor="var(--color-primary, #61dafb)" />
-                              <stop offset="100%" stopColor="var(--color-secondary, #a259ff)" />
-                            </linearGradient>
-                          </defs>
-                        </svg>
-
-                        <div className="dial-inner-brand-icon">
-                          {skill.icon}
-                        </div>
-                      </div>
-
-                      <h4 className="dial-skill-title">{skill.name}</h4>
-                      <p className="dial-skill-desc">{skill.desc}</p>
-                      <div className="dial-skill-percentage gradient-text">{skill.level}%</div>
-                    </div>
-                  );
-                })}
-              </div>
-
-            </div>
+            ))}
           </div>
+
+          <div className="reel-dots">
+            {SKILLS_DATA.map((cat, i) => (
+              <button
+                key={cat.id}
+                className={`reel-dot ${activeIndex === i ? 'active' : ''}`}
+                onClick={() => goToSlide(i)}
+              />
+            ))}
+          </div>
+
+          <p className="reel-hint">Scroll up / down to see next skill</p>
         </div>
       )}
-
 
       {showCloseAnimation && (
         <div className={`tab-close-animation-overlay ${animationState}`}>
