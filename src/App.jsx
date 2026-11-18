@@ -11,9 +11,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Lenis from 'lenis';
 import './App.css';
 
+
 gsap.registerPlugin(ScrollTrigger);
 
-// Full Screen Transition Manager
 function TransitionManager({ isTransitioning, transitionType }) {
   if (transitionType === 'shutter-close') {
     return (
@@ -53,6 +53,7 @@ function TransitionManager({ isTransitioning, transitionType }) {
     </div>
   );
 }
+
 // ScrollToHash handles clicking hash links and page loading with a hash
 function ScrollToHash() {
   const { hash, pathname } = useLocation();
@@ -87,21 +88,17 @@ function ScrollToHash() {
       }
     }
   }, [hash, pathname]);
-
   return null;
 }
 
-// Custom hook to trigger staggered entrance reveals as sections scroll into view
 function useScrollReveal() {
   useEffect(() => {
-    // Find all sections or root containers that contain reveals
     const sections = document.querySelectorAll('section, footer, #hero');
 
     sections.forEach((section) => {
       const elements = section.querySelectorAll('.reveal');
       if (!elements.length) return;
 
-      // Stagger reveal animations inside each section using GSAP ScrollTrigger
       gsap.fromTo(
         elements,
         {
@@ -176,16 +173,12 @@ function AnimatedRoutes() {
         <Route
           path="/"
           element={
-            <motion.div
-              variants={pageVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            >
+            <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit">
               <HomePage />
             </motion.div>
           }
         />
+      
       </Routes>
     </AnimatePresence>
   );
@@ -229,7 +222,7 @@ export default function App() {
       const detail = e.detail;
       const noOverlay = typeof detail === 'object' && detail.noOverlay;
       const type = typeof detail === 'object' && detail.transitionType ? detail.transitionType : 'plane';
-      
+
       setTransitionType(type);
 
       if (!noOverlay) {
@@ -245,7 +238,7 @@ export default function App() {
           action();
         }
 
-        // Secondary timeout tick to let React/browser restore scroll heights before calculation
+
         const scrollTimer = setTimeout(() => {
           if (targetHash) {
             const elementId = targetHash.replace(/^\/?#/, '');

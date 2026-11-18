@@ -23,7 +23,7 @@ const PROJECTS_DATA = [
     title: 'Auth E-Commerce',
     subtitle: 'Secure Shopping Platform',
     desc: 'A modern e-commerce website featuring user registration, login authentication, secure session handling, product catalogs, shopping cart management, and interactive checkout. Built with HTML, CSS, JS, and React.',
-    tags: ['HTML', 'CSS', 'JavaScript', 'React'],
+    tags: ['HTML', 'CSS', 'JavaScript', 'React', 'authentications',],
     image: 'https://images.unsplash.com/photo-1557821552-17105176677c?q=80&w=800&auto=format&fit=crop',
     demoUrl: 'https://auth-commerce-demo.vercel.app/'
   },
@@ -36,12 +36,12 @@ const PROJECTS_DATA = [
     demoUrl: 'https://cars-services-olive.vercel.app/'
   },
   {
-    title: 'Project Title',
-    subtitle: 'Interactive Web Platform',
+    title: 'FIND WORKER',
+    subtitle: 'Find the Best Workers for your personl work',
     desc: 'A feature-rich web platform designed to solve real-world problems. Under development, click to see progress. (Placeholder project, customize it with your new project details).',
-    tags: ['React', 'CSS', 'JavaScript', 'API Integration'],
-    image: 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=800&auto=format&fit=crop',
-    demoUrl: 'https://github.com/'
+    tags: ['React', 'CSS', 'JavaScript', 'API Integration', 'mognoDB', 'node.js'],
+    image: '/FINDWORKER.jpg',
+    demoUrl: 'https://find-worker-six.vercel.app/'
   }
 ];
 
